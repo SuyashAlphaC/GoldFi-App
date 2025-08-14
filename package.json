@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.31.1",
-    "@pythnetwork/pyth-solana-receiver": "^0.11.0",
+    "@pythnetwork/pyth-solana-receiver": "^0.8.1",
     "@solana/spl-token": "^0.4.13",
     "@solana/wallet-adapter-react": "^0.15.39",
     "@solana/wallet-adapter-react-ui": "^0.9.39",

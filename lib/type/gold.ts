@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/gold.json`.
  */
 export type Gold = {
-  "address": "2edxHg2kausqLGvMyoGTnsnwkex9jcU3t8gCQeJLwnvT",
+  "address": "53uk2B3cnvQbHjYKixi8QTUARJTLyhsjCY8RFURbMNYf",
   "metadata": {
     "name": "gold",
     "version": "0.1.0",
@@ -1343,76 +1343,71 @@ export type Gold = {
   "errors": [
     {
       "code": 6000,
-      "name": "invalidPythFeed",
-      "msg": "Invalid Pyth Feed"
-    },
-    {
-      "code": 6001,
       "name": "invalidPythPrice",
       "msg": "Invalid Pyth Price"
     },
     {
-      "code": 6002,
+      "code": 6001,
       "name": "invalidMintAuthority",
       "msg": "Invalid Mint Authority"
     },
     {
-      "code": 6003,
+      "code": 6002,
       "name": "invalidPrice",
       "msg": "Invalid Price"
     },
     {
-      "code": 6004,
+      "code": 6003,
       "name": "unauthorized",
       "msg": "Unauthorized access"
     },
     {
-      "code": 6005,
+      "code": 6004,
       "name": "unauthorizedOracle",
       "msg": "Unauthorized oracle"
     },
     {
-      "code": 6006,
+      "code": 6005,
       "name": "programPaused",
       "msg": "Program is paused"
     },
     {
-      "code": 6007,
+      "code": 6006,
       "name": "invalidAmount",
       "msg": "Invalid amount"
     },
     {
-      "code": 6008,
+      "code": 6007,
       "name": "insufficientAmount",
       "msg": "Insufficient amount"
     },
     {
-      "code": 6009,
+      "code": 6008,
       "name": "insufficientVaultBalance",
       "msg": "Insufficient vault balance"
     },
     {
-      "code": 6010,
+      "code": 6009,
       "name": "stalePrice",
       "msg": "Price data is stale"
     },
     {
-      "code": 6011,
+      "code": 6010,
       "name": "invalidMint",
       "msg": "Invalid Mint"
     },
     {
-      "code": 6012,
+      "code": 6011,
       "name": "minimumRedemptionNotMet",
       "msg": "Minimum redemption amount not met (1 oz minimum)"
     },
     {
-      "code": 6013,
+      "code": 6012,
       "name": "overflow",
       "msg": "Arithmetic overflow"
     },
     {
-      "code": 6014,
+      "code": 6013,
       "name": "underflow",
       "msg": "Arithmetic underflow"
     }

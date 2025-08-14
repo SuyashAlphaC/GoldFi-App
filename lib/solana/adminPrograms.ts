@@ -1,19 +1,18 @@
+import { Program } from "@coral-xyz/anchor";
 import * as anchor from "@coral-xyz/anchor";
-import { Program, AnchorProvider } from "@coral-xyz/anchor";
 import {
   PublicKey,
   SystemProgram,
-  Connection,
 } from "@solana/web3.js";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { TOKEN_PROGRAM_ID,ASSOCIATED_TOKEN_PROGRAM_ID,getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { Gold } from "../type/gold"; 
 import IDL from "../idl/gold.json";
-import { PythSolanaReceiver } from "@pythnetwork/pyth-solana-receiver";
+import { DEFAULT_PUSH_ORACLE_PROGRAM_ID } from "@pythnetwork/pyth-solana-receiver/lib/address";
 
 export const GOLD_PROGRAM_ID = new PublicKey(IDL.address);
 
 
-export const GOLD_MINT_PUBKEY = new PublicKey("GymixLSPkFYGgWse6zTsE6hjA7fywKZDdfzN8gbAeiqE");
+export const GOLD_MINT_PUBKEY = new PublicKey("GisyxnAFkRRd8mECKvnAmmWh7UKKmYNnp48qXbARMDiZ");
 
 const GOLD_USD_PRICE_FEED_ID = "0x765d2ba906dbc32ca17cc11f5310a89e9ee1f6420508c63861f2f8ba4ee34bb2";
 
@@ -31,19 +30,29 @@ export const getGoldStatePDA = (): PublicKey => {
   return pda;
 };
 
+
+export const getVaultTokenAccount = (): PublicKey => {
+    const goldStatePDA = getGoldStatePDA();
+    return getAssociatedTokenAddressSync(GOLD_MINT_PUBKEY, goldStatePDA, true);
+};
+
 /**
  * Finds the Pyth price feed account address.
  * @param provider - An AnchorProvider instance from your component.
  * @returns The public key of the Pyth price feed account.
  */
-export const getPythPriceFeedAccount = (provider: AnchorProvider): PublicKey => {
-  const pythSolanaReceiver = new PythSolanaReceiver({
-    connection: provider.connection,
-    wallet: provider.wallet, // The AnchorWallet fits the required interface
-  });
-  return pythSolanaReceiver.getPriceFeedAccountAddress(0, GOLD_USD_PRICE_FEED_ID);
+export const getPythPriceFeedAccount = (): PublicKey => {
+  // Convert your price feed ID to a Buffer (32 bytes)
+  const priceFeedId = Buffer.from(GOLD_USD_PRICE_FEED_ID.replace(/^0x/, ""), "hex");
+  const shardId = 0;
+  const shardBuffer = Buffer.alloc(2);
+  shardBuffer.writeUInt16LE(shardId, 0);
+  const [pda] = PublicKey.findProgramAddressSync(
+    [shardBuffer, priceFeedId],
+    DEFAULT_PUSH_ORACLE_PROGRAM_ID
+  );
+  return pda;
 };
-
 
 
 
@@ -70,11 +79,12 @@ export const initializeProtocol = async (
   const tx = await program.methods
     .initialize(oracleAuthority, custodyProvider)
     .accounts({
+      // @ts-expect-error: Anchor typegen issue
       goldState: goldStatePDA,
       goldMint: GOLD_MINT_PUBKEY,
-      authority: authority,
+      authority,
       systemProgram: SystemProgram.programId,
-      tokenProgram: TOKEN_PROGRAM_ID,
+      tokenProgram: TOKEN_PROGRAM_ID
     })
     .rpc();
 
@@ -91,8 +101,7 @@ export const updateGoldPrice = async (
   program: Program<Gold>
 ): Promise<string> => {
   const goldStatePDA = getGoldStatePDA();
-  const priceFeedAccount = getPythPriceFeedAccount(program.provider as AnchorProvider);
-  // The oracle authority is the currently connected wallet
+  const priceFeedAccount = getPythPriceFeedAccount();
   const oracleAuthority = program.provider.publicKey;
 
   if (!oracleAuthority) {
@@ -103,11 +112,39 @@ export const updateGoldPrice = async (
     .updateGoldPrice()
     .accounts({
       goldState: goldStatePDA,
-      oracleAuthority: oracleAuthority,
-      priceUpdate: priceFeedAccount,
+      // @ts-expect-error: Anchor typegen issue
+      oracleAuthority,
+      priceUpdate: priceFeedAccount
+    })
+    .rpc();
+    console.log("Update Gold Price transaction signature", tx);
+    const state = await program.account.goldState.fetch(goldStatePDA);
+    console.log("Gold Token Price:", state.goldPriceUsd.toString());
+  return tx;
+};
+
+export const mintGoldPrice = async (
+  program : Program<Gold>,
+  amountToMint : anchor.BN,
+  custodyReceipt: string,
+): Promise<string> => {
+  const goldStatePDA = getGoldStatePDA();
+  const goldMint = GOLD_MINT_PUBKEY;
+  const vaultTokenAccount = getVaultTokenAccount();
+
+  const tx = await program.methods
+    .mintGoldTokens(amountToMint, custodyReceipt)
+    .accounts({
+      goldState: goldStatePDA,
+      goldMint,
+      vaultTokenAccount,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      systemProgram: SystemProgram.programId,
+      associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
     })
     .rpc();
 
+  console.log("Mint Gold Tokens transaction signature", tx);
   return tx;
 };
 
