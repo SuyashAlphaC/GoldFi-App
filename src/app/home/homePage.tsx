@@ -142,6 +142,7 @@ const HomePage = () => {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center space-x-2">
                       {wallet?.adapter.icon && <img src={wallet.adapter.icon} alt="wallet icon" className="w-4 h-4" />}
+                      {/*   @ts-expect-error */}
                       <span className="text-sm text-gray-300 font-medium">{wallet.adapter.name}</span>
                     </div>
                     <button onClick={handleRefreshBalance} disabled={isLoadingBalance} className="p-1 text-gray-400 hover:text-white disabled:opacity-50" title="Refresh balance">

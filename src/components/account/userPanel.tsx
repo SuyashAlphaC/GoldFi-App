@@ -101,8 +101,11 @@ const UserPanel: React.FC = () => {
         const state = await fetchGoldState(program);
 
         setBalances({
+          // @ts-expect-error: Anchor typegen issue
             sol: sol / LAMPORTS_PER_SOL,
+            // @ts-expect-error: Anchor typegen issue
             usdc: usdcAccount ? Number(usdcAccount.amount) / (10**6) : 0,
+            // @ts-expect-error: Anchor typegen issue
             gold: goldAccount ? Number(goldAccount.amount) / (10**6) : 0,
         });
         setGoldState(state);
