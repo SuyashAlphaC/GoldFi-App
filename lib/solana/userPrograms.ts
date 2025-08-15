@@ -83,6 +83,7 @@ export const buyGoldTokens = async (
       goldState: goldStatePDA,
       goldMint: GOLD_MINT_PUBKEY,
       usdcMint: USDC_MINT_PUBKEY,
+        // @ts-expect-error: Anchor typegen issue
       vaultTokenAccount,
       vaultUsdcAccount,
       buyer,
@@ -122,6 +123,7 @@ export const sellGoldTokens = async (
     .sellGoldTokens(goldAmount)
     .accounts({
       goldState: goldStatePDA,
+        // @ts-expect-error: Anchor typegen issue
       goldMint: GOLD_MINT_PUBKEY,
       usdcMint: USDC_MINT_PUBKEY,
       vaultTokenAccount,
@@ -160,6 +162,7 @@ export const redeemPhysicalGold = async (
     .redeemPhysicalGold(goldAmount, shippingAddress)
     .accounts({
       goldState: goldStatePDA,
+        // @ts-expect-error: Anchor typegen issue
       goldMint: GOLD_MINT_PUBKEY,
       userTokenAccount,
       user,
