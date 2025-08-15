@@ -137,6 +137,7 @@ export const mintGoldPrice = async (
     .accounts({
       goldState: goldStatePDA,
       goldMint,
+        // @ts-expect-error: Anchor typegen issue
       vaultTokenAccount,
       tokenProgram: TOKEN_PROGRAM_ID,
       systemProgram: SystemProgram.programId,
